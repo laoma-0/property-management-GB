@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.MaintainTaskMapper">
+    <resultMap id="BaseResultMap" type="org.example.entity.MaintainTask">
+        <id property="taskId" column="task_id" />
+        <result property="deviceId" column="device_id" />
+        <result property="predictReason" column="predict_reason" />
+        <result property="assigneeId" column="assignee_id" />
+        <result property="taskStatus" column="task_status" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM maintain_task WHERE task_id = #{taskId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM maintain_task
+    </select>
+
+    <insert id="insert" parameterType="org.example.entity.MaintainTask">
+        INSERT INTO maintain_task (device_id, predict_reason, assignee_id, task_status, create_time)
+        VALUES (#{deviceId}, #{predictReason}, #{assigneeId}, #{taskStatus}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="org.example.entity.MaintainTask">
+        UPDATE maintain_task
+        SET device_id=#{deviceId}, predict_reason=#{predictReason}, assignee_id=#{assigneeId}, task_status=#{taskStatus}, create_time=#{createTime}
+        WHERE task_id=#{taskId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM maintain_task WHERE task_id=#{taskId}
+    </delete>
+</mapper>

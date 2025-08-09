@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.DeviceMetricsMapper">
+    <resultMap id="BaseResultMap" type="org.example.entity.DeviceMetrics">
+        <id property="metricId" column="metric_id" />
+        <result property="deviceId" column="device_id" />
+        <result property="metricTime" column="metric_time" />
+        <result property="vibration" column="vibration" />
+        <result property="temperature" column="temperature" />
+        <result property="current" column="current" />
+        <result property="isAbnormal" column="is_abnormal" />
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM device_metrics WHERE metric_id = #{metricId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM device_metrics
+    </select>
+
+    <insert id="insert" parameterType="org.example.entity.DeviceMetrics">
+        INSERT INTO device_metrics (device_id, metric_time, vibration, temperature, current, is_abnormal)
+        VALUES (#{deviceId}, #{metricTime}, #{vibration}, #{temperature}, #{current}, #{isAbnormal})
+    </insert>
+
+    <update id="update" parameterType="org.example.entity.DeviceMetrics">
+        UPDATE device_metrics
+        SET device_id=#{deviceId}, metric_time=#{metricTime}, vibration=#{vibration}, temperature=#{temperature}, current=#{current}, is_abnormal=#{isAbnormal}
+        WHERE metric_id=#{metricId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM device_metrics WHERE metric_id=#{metricId}
+    </delete>
+</mapper>

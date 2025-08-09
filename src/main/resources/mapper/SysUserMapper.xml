@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.SysUserMapper">
+    <resultMap id="BaseResultMap" type="org.example.entity.SysUser">
+        <id property="userId" column="user_id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="realName" column="real_name" />
+        <result property="phone" column="phone" />
+        <result property="userType" column="user_type" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM sys_user WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM sys_user
+    </select>
+
+    <insert id="insert" parameterType="org.example.entity.SysUser">
+        INSERT INTO sys_user (username, password, real_name, phone, user_type, create_time)
+        VALUES (#{username}, #{password}, #{realName}, #{phone}, #{userType}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="org.example.entity.SysUser">
+        UPDATE sys_user
+        SET username=#{username}, password=#{password}, real_name=#{realName}, phone=#{phone}, user_type=#{userType}
+        WHERE user_id=#{userId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM sys_user WHERE user_id=#{userId}
+    </delete>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.PaymentBillMapper">
+    <resultMap id="BaseResultMap" type="org.example.entity.PaymentBill">
+        <id property="billId" column="bill_id" />
+        <result property="roomId" column="room_id" />
+        <result property="feeId" column="fee_id" />
+        <result property="period" column="period" />
+        <result property="amount" column="amount" />
+        <result property="status" column="status" />
+        <result property="dueDate" column="due_date" />
+        <result property="paymentTime" column="payment_time" />
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM payment_bill WHERE bill_id = #{billId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM payment_bill
+    </select>
+
+    <insert id="insert" parameterType="org.example.entity.PaymentBill">
+        INSERT INTO payment_bill (room_id, fee_id, period, amount, status, due_date, payment_time)
+        VALUES (#{roomId}, #{feeId}, #{period}, #{amount}, #{status}, #{dueDate}, #{paymentTime})
+    </insert>
+
+    <update id="update" parameterType="org.example.entity.PaymentBill">
+        UPDATE payment_bill
+        SET room_id=#{roomId}, fee_id=#{feeId}, period=#{period}, amount=#{amount}, status=#{status}, due_date=#{dueDate}, payment_time=#{paymentTime}
+        WHERE bill_id=#{billId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM payment_bill WHERE bill_id=#{billId}
+    </delete>
+</mapper>

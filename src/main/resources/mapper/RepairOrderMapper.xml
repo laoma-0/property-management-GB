@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.RepairOrderMapper">
+    <resultMap id="BaseResultMap" type="org.example.entity.RepairOrder">
+        <id property="orderId" column="order_id" />
+        <result property="userId" column="user_id" />
+        <result property="roomId" column="room_id" />
+        <result property="repairType" column="repair_type" />
+        <result property="description" column="description" />
+        <result property="aiLabel" column="ai_label" />
+        <result property="imagePath" column="image_path" />
+        <result property="status" column="status" />
+        <result property="assigneeId" column="assignee_id" />
+        <result property="createTime" column="create_time" />
+        <result property="completeTime" column="complete_time" />
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM repair_order WHERE order_id = #{orderId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM repair_order
+    </select>
+
+    <insert id="insert" parameterType="org.example.entity.RepairOrder">
+        INSERT INTO repair_order (user_id, room_id, repair_type, description, ai_label, image_path, status, assignee_id, create_time, complete_time)
+        VALUES (#{userId}, #{roomId}, #{repairType}, #{description}, #{aiLabel}, #{imagePath}, #{status}, #{assigneeId}, #{createTime}, #{completeTime})
+    </insert>
+
+    <update id="update" parameterType="org.example.entity.RepairOrder">
+        UPDATE repair_order
+        SET user_id=#{userId}, room_id=#{roomId}, repair_type=#{repairType}, description=#{description}, ai_label=#{aiLabel}, image_path=#{imagePath}, status=#{status}, assignee_id=#{assigneeId}, create_time=#{createTime}, complete_time=#{completeTime}
+        WHERE order_id=#{orderId}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM repair_order WHERE order_id=#{orderId}
+    </delete>
+</mapper>
