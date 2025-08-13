@@ -21,6 +21,21 @@
         SELECT * FROM user
     </select>
 
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT * FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+        </where>
+    </select>
+
     <insert id="insert" parameterType="org.example.entity.User">
         INSERT INTO user (username, password, role, name, phone, email, create_time, update_time)
         VALUES (#{username}, #{password}, #{role}, #{name}, #{phone}, #{email}, #{createTime}, #{updateTime})

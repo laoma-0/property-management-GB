@@ -5,14 +5,16 @@
       <HeaderBar />
     </el-header>
 
-    <el-container>
+    <el-container class="main-content">
       <!-- 侧边栏 -->
       <Sidebar :active-menu="activeMenu" />
 
       <!-- 主内容区 -->
-      <el-main>
+      <el-main class="main-area">
         <Breadcrumb />
-        <router-view />
+        <div class="content-wrapper">
+          <router-view />
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -32,9 +34,18 @@ const activeMenu = computed(() => route.name);
 
 <style scoped>
 .main-container {
-  height: 100vh;
+  height: 99vh;
+  width: 99vw;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+background: #1f2329;
+}
+
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
 }
 
 .el-header {
@@ -42,19 +53,38 @@ const activeMenu = computed(() => route.name);
   background-color: #409eff;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .el-aside {
   background-color: #eef1f6;
-  height: calc(100vh - 60px);
+  height: 100%;
   overflow-y: auto;
   border-right: 1px solid #e6e6e6;
+  flex-shrink: 0;
 }
 
-.el-main {
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
-  height: calc(100vh - 60px);
-  overflow-y: auto;
   background-color: #f5f7fa;
+  overflow: hidden;
+}
+
+.main-area :deep(.el-breadcrumb) {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 4px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 </style>

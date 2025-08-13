@@ -1,17 +1,12 @@
 <template>
-  <div>
+  <div class="announcement-container">
     <el-card>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-        "
-      >
-        <span style="font-size: 18px; font-weight: bold">公告管理</span>
-        <el-button type="primary" @click="fetchList">刷新</el-button>
-      </div>
+      <template #header>
+        <div class="card-header">
+          <span>公告管理</span>
+          <el-button type="primary" @click="fetchList">刷新</el-button>
+        </div>
+      </template>
       <el-table :data="list" style="width: 100%">
         <el-table-column prop="announceId" label="ID" width="80" />
         <el-table-column prop="title" label="标题" />
@@ -44,3 +39,29 @@ const fetchList = async () => {
 };
 onMounted(fetchList);
 </script>
+
+<style scoped>
+.announcement-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.announcement-container :deep(.el-card) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.announcement-container :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
