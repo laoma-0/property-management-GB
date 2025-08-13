@@ -15,7 +15,7 @@ import java.util.List;
  * 处理物业费类型（如水费、电费等）的查询、新增、修改、删除等请求
  */
 @RestController
-@RequestMapping("/api/fee-types")
+@RequestMapping("/fee-types")
 @Tag(name = "费用类型管理", description = "物业收费类型相关接口（类型定义、费率等）")
 public class FeeTypeController {
     @Autowired
@@ -52,7 +52,7 @@ public class FeeTypeController {
      * @return 包含影响行数的Result对象
      */
     @PostMapping
-    @Operation(summary = "新增费用类型", description = "添加新的物业费类型到系统")
+    @Operation(summary = "新增费用类型", description = "创建新的物业费用类型")
     public Result<Integer> addFeeType(
             @Parameter(description = "费用类型信息", required = true)
             @RequestBody FeeType feeType) {
@@ -62,11 +62,11 @@ public class FeeTypeController {
 
     /**
      * 修改费用类型
-     * @param feeType 类型实体（需包含ID和更新信息，如费率调整）
+     * @param feeType 类型实体（需包含ID和更新信息）
      * @return 包含影响行数的Result对象
      */
     @PutMapping
-    @Operation(summary = "修改费用类型", description = "更新费用类型信息（如费率调整、名称变更等）")
+    @Operation(summary = "修改费用类型", description = "更新费用类型信息")
     public Result<Integer> updateFeeType(
             @Parameter(description = "更新后的费用类型信息", required = true)
             @RequestBody FeeType feeType) {

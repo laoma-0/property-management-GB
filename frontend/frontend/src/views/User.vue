@@ -18,7 +18,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="姓名">
-              <el-input v-model="searchForm.name" placeholder="请输入姓名" />
+              <el-input v-model="searchForm.realName" placeholder="请输入姓名" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -27,6 +27,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
+            <el-form-item label="用户类型">
+              <el-select v-model="searchForm.userType" placeholder="请选择用户类型" clearable style="width: 100%">
+                <el-option label="业主" :value="0" />
+                <el-option label="物业人员" :value="1" />
+                <el-option label="维修工" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24" style="text-align: right;">
             <el-form-item>
               <el-button type="primary" @click="handleSearch">搜索</el-button>
               <el-button @click="handleReset">重置</el-button>
@@ -44,12 +55,17 @@
           v-loading="loading"
           height="100%"
           max-height="100%">
-          <el-table-column prop="id" label="用户ID" width="80" />
+          <el-table-column prop="userId" label="用户ID" width="80" />
           <el-table-column prop="username" label="用户名" />
-          <el-table-column prop="name" label="姓名" />
-          <el-table-column prop="role" label="角色" />
+          <el-table-column prop="realName" label="姓名" />
+          <el-table-column prop="userType" label="用户类型">
+            <template #default="scope">
+              <el-tag :type="getUserTypeTag(scope.row.userType)">
+                {{ getUserTypeName(scope.row.userType) }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="phone" label="手机号" />
-          <el-table-column prop="email" label="邮箱" />
           <el-table-column prop="createTime" label="创建时间" width="180">
             <template #default="scope">
               {{ formatDate(scope.row.createTime) }}
@@ -57,8 +73,10 @@
           </el-table-column>
           <el-table-column label="操作" width="200" fixed="right">
             <template #default="scope">
-              <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+              <div class="operation-buttons">
+                <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -80,26 +98,23 @@
       <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" @close="handleDialogClose">
         <el-form :model="userForm" :rules="userRules" ref="userFormRef" label-width="80px">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="userForm.username" :disabled="!!userForm.id" />
+            <el-input v-model="userForm.username" :disabled="!!userForm.userId" />
           </el-form-item>
-          <el-form-item label="密码" prop="password" v-if="!userForm.id">
-            <el-input v-model="userForm.password" type="password" />
+          <el-form-item label="密码" prop="password" v-if="!userForm.userId">
+            <el-input v-model="userForm.password" type="password" show-password />
           </el-form-item>
-          <el-form-item label="姓名" prop="name">
-            <el-input v-model="userForm.name" />
+          <el-form-item label="姓名" prop="realName">
+            <el-input v-model="userForm.realName" />
           </el-form-item>
-          <el-form-item label="角色" prop="role">
-            <el-select v-model="userForm.role" style="width: 100%">
-              <el-option label="管理员" value="admin" />
-              <el-option label="物业人员" value="staff" />
-              <el-option label="业主" value="owner" />
+          <el-form-item label="用户类型" prop="userType">
+            <el-select v-model="userForm.userType" style="width: 100%">
+              <el-option label="业主" :value="0" />
+              <el-option label="物业人员" :value="1" />
+              <el-option label="维修工" :value="2" />
             </el-select>
           </el-form-item>
           <el-form-item label="手机号" prop="phone">
             <el-input v-model="userForm.phone" />
-          </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="userForm.email" />
           </el-form-item>
         </el-form>
         <template #footer>
@@ -116,7 +131,12 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import request from '@/api/request'
+import { 
+  getUsers, 
+  addUser, 
+  updateUser, 
+  deleteUser 
+} from '@/api/sysUser'
 
 // 用户列表相关
 const userList = ref([])
@@ -125,8 +145,9 @@ const loading = ref(false)
 // 搜索表单
 const searchForm = reactive({
   username: '',
-  name: '',
-  phone: ''
+  realName: '',
+  phone: '',
+  userType: ''
 })
 
 // 分页参数
@@ -143,13 +164,12 @@ const isEdit = ref(false)
 
 // 用户表单
 const userForm = reactive({
-  id: null,
+  userId: null,
   username: '',
   password: '',
-  name: '',
-  role: '',
-  phone: '',
-  email: ''
+  realName: '',
+  userType: '',
+  phone: ''
 })
 
 // 表单验证规则
@@ -161,23 +181,40 @@ const userRules = {
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, message: '密码长度至少6位', trigger: 'blur' }
   ],
-  name: [
+  realName: [
     { required: true, message: '请输入姓名', trigger: 'blur' }
   ],
-  role: [
-    { required: true, message: '请选择角色', trigger: 'change' }
+  userType: [
+    { required: true, message: '请选择用户类型', trigger: 'change' }
   ],
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
-  ],
-  email: [
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
   ]
 }
 
 // 表单引用
 const userFormRef = ref(null)
+
+// 获取用户类型名称
+const getUserTypeName = (type) => {
+  switch (type) {
+    case 0: return '业主'
+    case 1: return '物业人员'
+    case 2: return '维修工'
+    default: return '未知'
+  }
+}
+
+// 获取用户类型标签样式
+const getUserTypeTag = (type) => {
+  switch (type) {
+    case 0: return 'success'  // 业主 - 绿色
+    case 1: return 'primary'  // 物业人员 - 蓝色
+    case 2: return 'warning'  // 维修工 - 橙色
+    default: return 'info'    // 未知 - 灰色
+  }
+}
 
 // 格式化日期
 const formatDate = (date) => {
@@ -190,12 +227,10 @@ const formatDate = (date) => {
 const getUserList = async () => {
   try {
     loading.value = true
-    const res = await request.get('/users', {
-      params: {
-        pageNum: pagination.pageNum,
-        pageSize: pagination.pageSize,
-        ...searchForm
-      }
+    const res = await getUsers({
+      pageNum: pagination.pageNum,
+      pageSize: pagination.pageSize,
+      ...searchForm
     })
     
     if (res.code === 200) {
@@ -220,8 +255,9 @@ const handleSearch = () => {
 // 处理重置
 const handleReset = () => {
   searchForm.username = ''
-  searchForm.name = ''
+  searchForm.realName = ''
   searchForm.phone = ''
+  searchForm.userType = ''
   pagination.pageNum = 1
   getUserList()
 }
@@ -245,14 +281,20 @@ const handleAddUser = () => {
   isEdit.value = false
   // 重置表单
   Object.assign(userForm, {
-    id: null,
+    userId: null,
     username: '',
     password: '',
-    name: '',
-    role: '',
-    phone: '',
-    email: ''
+    realName: '',
+    userType: '',
+    phone: ''
   })
+  
+  // 恢复验证规则，新增时密码必填
+  userRules.password = [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+  ]
+  
   dialogVisible.value = true
 }
 
@@ -261,7 +303,20 @@ const handleEdit = (row) => {
   dialogTitle.value = '编辑用户'
   isEdit.value = true
   // 填充表单数据
-  Object.assign(userForm, row)
+  Object.assign(userForm, {
+    userId: row.userId,
+    username: row.username,
+    password: '', // 编辑时不显示原密码
+    realName: row.realName,
+    userType: row.userType,
+    phone: row.phone
+  })
+  
+  // 修改验证规则，编辑时密码非必填
+  userRules.password = [
+    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+  ]
+  
   dialogVisible.value = true
 }
 
@@ -277,7 +332,7 @@ const handleDelete = (row) => {
     }
   ).then(async () => {
     try {
-      const res = await request.delete(`/users/${row.id}`)
+      const res = await deleteUser(row.userId)
       if (res.code === 200) {
         ElMessage.success('删除成功')
         getUserList()
@@ -302,9 +357,17 @@ const submitUserForm = async () => {
   try {
     await userFormRef.value.validate()
     
+    // 处理表单数据
+    const formData = { ...userForm }
+    
     if (isEdit.value) {
       // 编辑用户
-      const res = await request.put('/users', userForm)
+      // 如果密码字段为空且未修改密码，则删除该字段
+      if (!formData.password) {
+        delete formData.password
+      }
+      
+      const res = await updateUser(formData)
       if (res.code === 200) {
         ElMessage.success('更新成功')
         dialogVisible.value = false
@@ -313,8 +376,8 @@ const submitUserForm = async () => {
         ElMessage.error(res.msg || '更新失败')
       }
     } else {
-      // 新增用户
-      const res = await request.post('/users', userForm)
+      // 新增用户，必须填写密码
+      const res = await addUser(formData)
       if (res.code === 200) {
         ElMessage.success('新增成功')
         dialogVisible.value = false
@@ -385,5 +448,16 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.operation-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.operation-buttons .el-button {
+  flex: 1;
+  min-width: 0;
 }
 </style>

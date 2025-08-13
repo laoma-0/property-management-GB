@@ -15,7 +15,7 @@ import java.util.List;
  * 处理小区楼栋信息的查询、新增、修改、删除等请求
  */
 @RestController
-@RequestMapping("/api/buildings")
+@RequestMapping("/buildings")
 @Tag(name = "楼栋管理", description = "小区楼栋信息相关接口（CRUD操作）")
 public class BuildingController {
     @Autowired
@@ -52,7 +52,7 @@ public class BuildingController {
      * @return 包含影响行数的Result对象
      */
     @PostMapping
-    @Operation(summary = "新增楼栋", description = "添加新的楼栋信息到系统")
+    @Operation(summary = "新增楼栋", description = "创建新的小区楼栋信息")
     public Result<Integer> addBuilding(
             @Parameter(description = "楼栋信息", required = true)
             @RequestBody Building building) {
@@ -66,7 +66,7 @@ public class BuildingController {
      * @return 包含影响行数的Result对象
      */
     @PutMapping
-    @Operation(summary = "修改楼栋", description = "更新楼栋信息（如单元数调整、名称变更等）")
+    @Operation(summary = "修改楼栋", description = "更新楼栋信息")
     public Result<Integer> updateBuilding(
             @Parameter(description = "更新后的楼栋信息", required = true)
             @RequestBody Building building) {

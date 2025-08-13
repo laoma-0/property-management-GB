@@ -1,8 +1,10 @@
 package org.example.controller;
 
+import com.github.pagehelper.PageInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.common.PageResult;
 import org.example.common.Result;
 import org.example.entity.Room;
 import org.example.service.RoomService;
@@ -15,7 +17,7 @@ import java.util.List;
  * 处理小区房间信息的查询、新增、修改、删除等请求
  */
 @RestController
-@RequestMapping("/api/rooms")
+@RequestMapping("/rooms")
 @Tag(name = "房间管理", description = "小区房间信息相关接口（CRUD操作）")
 public class RoomController {
     @Autowired
@@ -39,11 +41,35 @@ public class RoomController {
      * 查询所有房间
      * @return 包含房间列表的Result对象
      */
-    @GetMapping
+    @GetMapping("/all")
     @Operation(summary = "查询所有房间", description = "获取系统中所有小区房间的列表信息")
     public Result<List<Room>> getAllRooms() {
         List<Room> rooms = roomService.getAllRooms();
         return Result.success(rooms);
+    }
+
+    /**
+     * 分页查询房间
+     * @param buildingId 楼栋ID（可选）
+     * @param roomNumber 房号（可选）
+     * @param pageNum 页码（从1开始）
+     * @param pageSize 每页记录数
+     * @return 包含分页房间列表的PageResult对象
+     */
+    @GetMapping
+    @Operation(summary = "分页查询房间", description = "分页获取房间列表，支持按楼栋、房号搜索")
+    public PageResult<Room> getRoomsByPage(
+            @Parameter(description = "楼栋ID")
+            @RequestParam(required = false) Integer buildingId,
+            @Parameter(description = "房号")
+            @RequestParam(required = false) String roomNumber,
+            @Parameter(description = "页码（从1开始）")
+            @RequestParam(defaultValue = "1") int pageNum,
+            @Parameter(description = "每页记录数")
+            @RequestParam(defaultValue = "10") int pageSize) {
+        
+        PageInfo<Room> pageInfo = roomService.getRoomsByPage(buildingId, roomNumber, pageNum, pageSize);
+        return PageResult.success(pageInfo.getList(), pageInfo.getTotal(), pageNum, pageSize);
     }
 
     /**
@@ -52,7 +78,7 @@ public class RoomController {
      * @return 包含影响行数的Result对象
      */
     @PostMapping
-    @Operation(summary = "新增房间", description = "添加新的房间信息到系统")
+    @Operation(summary = "新增房间", description = "创建新的小区房间信息")
     public Result<Integer> addRoom(
             @Parameter(description = "房间信息", required = true)
             @RequestBody Room room) {
@@ -66,7 +92,7 @@ public class RoomController {
      * @return 包含影响行数的Result对象
      */
     @PutMapping
-    @Operation(summary = "修改房间", description = "更新房间信息（如业主变更、状态更新等）")
+    @Operation(summary = "修改房间", description = "更新房间信息")
     public Result<Integer> updateRoom(
             @Parameter(description = "更新后的房间信息", required = true)
             @RequestBody Room room) {

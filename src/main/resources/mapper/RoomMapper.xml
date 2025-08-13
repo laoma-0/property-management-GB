@@ -7,14 +7,66 @@
         <result property="roomNumber" column="room_number" />
         <result property="ownerId" column="owner_id" />
         <result property="area" column="area" />
+        <!-- 关联字段映射 -->
+        <association property="building" javaType="org.example.entity.Building">
+            <id property="buildingId" column="b_building_id"/>
+            <result property="buildingName" column="building_name"/>
+        </association>
+        <association property="owner" javaType="org.example.entity.SysUser">
+            <id property="userId" column="u_user_id"/>
+            <result property="realName" column="real_name"/>
+            <result property="phone" column="phone"/>
+        </association>
     </resultMap>
 
     <select id="selectById" resultMap="BaseResultMap">
-        SELECT * FROM room WHERE room_id = #{roomId}
+        SELECT 
+            r.*,
+            b.building_id as b_building_id,
+            b.building_name,
+            u.user_id as u_user_id,
+            u.real_name,
+            u.phone
+        FROM room r
+        LEFT JOIN building b ON r.building_id = b.building_id
+        LEFT JOIN sys_user u ON r.owner_id = u.user_id
+        WHERE r.room_id = #{roomId}
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
-        SELECT * FROM room
+        SELECT 
+            r.*,
+            b.building_id as b_building_id,
+            b.building_name,
+            u.user_id as u_user_id,
+            u.real_name,
+            u.phone
+        FROM room r
+        LEFT JOIN building b ON r.building_id = b.building_id
+        LEFT JOIN sys_user u ON r.owner_id = u.user_id
+        ORDER BY r.room_id DESC
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT 
+            r.*,
+            b.building_id as b_building_id,
+            b.building_name,
+            u.user_id as u_user_id,
+            u.real_name,
+            u.phone
+        FROM room r
+        LEFT JOIN building b ON r.building_id = b.building_id
+        LEFT JOIN sys_user u ON r.owner_id = u.user_id
+        <where>
+            <if test="buildingId != null">
+                AND r.building_id = #{buildingId}
+            </if>
+            <if test="roomNumber != null and roomNumber != ''">
+                AND r.room_number LIKE CONCAT('%', #{roomNumber}, '%')
+            </if>
+        </where>
+        ORDER BY r.room_id DESC
     </select>
 
     <insert id="insert" parameterType="org.example.entity.Room">

@@ -10,24 +10,77 @@
         <result property="status" column="status" />
         <result property="dueDate" column="due_date" />
         <result property="paymentTime" column="payment_time" />
+        <result property="createTime" column="create_time" />
+        <!-- 关联字段映射 -->
+        <association property="room" javaType="org.example.entity.Room">
+            <id property="roomId" column="r_room_id"/>
+            <result property="roomNumber" column="room_number"/>
+        </association>
+        <association property="feeType" javaType="org.example.entity.FeeType">
+            <id property="feeId" column="f_fee_id"/>
+            <result property="feeName" column="fee_name"/>
+        </association>
     </resultMap>
 
     <select id="selectById" resultMap="BaseResultMap">
-        SELECT * FROM payment_bill WHERE bill_id = #{billId}
+        SELECT 
+            pb.*,
+            r.room_id as r_room_id,
+            r.room_number,
+            f.fee_id as f_fee_id,
+            f.fee_name
+        FROM payment_bill pb
+        LEFT JOIN room r ON pb.room_id = r.room_id
+        LEFT JOIN fee_type f ON pb.fee_id = f.fee_id
+        WHERE pb.bill_id = #{billId}
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
-        SELECT * FROM payment_bill
+        SELECT 
+            pb.*,
+            r.room_id as r_room_id,
+            r.room_number,
+            f.fee_id as f_fee_id,
+            f.fee_name
+        FROM payment_bill pb
+        LEFT JOIN room r ON pb.room_id = r.room_id
+        LEFT JOIN fee_type f ON pb.fee_id = f.fee_id
+        ORDER BY pb.bill_id DESC
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT 
+            pb.*,
+            r.room_id as r_room_id,
+            r.room_number,
+            f.fee_id as f_fee_id,
+            f.fee_name
+        FROM payment_bill pb
+        LEFT JOIN room r ON pb.room_id = r.room_id
+        LEFT JOIN fee_type f ON pb.fee_id = f.fee_id
+        <where>
+            <if test="roomId != null">
+                AND pb.room_id = #{roomId}
+            </if>
+            <if test="feeId != null">
+                AND pb.fee_id = #{feeId}
+            </if>
+            <if test="status != null">
+                AND pb.status = #{status}
+            </if>
+        </where>
+        ORDER BY pb.bill_id DESC
     </select>
 
     <insert id="insert" parameterType="org.example.entity.PaymentBill">
-        INSERT INTO payment_bill (room_id, fee_id, period, amount, status, due_date, payment_time)
-        VALUES (#{roomId}, #{feeId}, #{period}, #{amount}, #{status}, #{dueDate}, #{paymentTime})
+        INSERT INTO payment_bill (room_id, fee_id, period, amount, status, due_date, payment_time, create_time)
+        VALUES (#{roomId}, #{feeId}, #{period}, #{amount}, #{status}, #{dueDate}, #{paymentTime}, NOW())
     </insert>
 
     <update id="update" parameterType="org.example.entity.PaymentBill">
         UPDATE payment_bill
-        SET room_id=#{roomId}, fee_id=#{feeId}, period=#{period}, amount=#{amount}, status=#{status}, due_date=#{dueDate}, payment_time=#{paymentTime}
+        SET room_id=#{roomId}, fee_id=#{feeId}, period=#{period}, amount=#{amount}, status=#{status}, 
+            due_date=#{dueDate}, payment_time=#{paymentTime}
         WHERE bill_id=#{billId}
     </update>
 

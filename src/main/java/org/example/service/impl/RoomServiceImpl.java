@@ -1,5 +1,7 @@
 package org.example.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.example.entity.Room;
 import org.example.mapper.RoomMapper;
 import org.example.service.RoomService;
@@ -20,6 +22,13 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> getAllRooms() {
         return roomMapper.selectAll();
+    }
+
+    @Override
+    public PageInfo<Room> getRoomsByPage(Integer buildingId, String roomNumber, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Room> rooms = roomMapper.selectByCondition(buildingId, roomNumber);
+        return new PageInfo<>(rooms);
     }
 
     @Override
