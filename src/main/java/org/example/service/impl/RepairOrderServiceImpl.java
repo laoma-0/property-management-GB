@@ -1,10 +1,13 @@
 package org.example.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.example.entity.RepairOrder;
 import org.example.mapper.RepairOrderMapper;
 import org.example.service.RepairOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -20,6 +23,13 @@ public class RepairOrderServiceImpl implements RepairOrderService {
     @Override
     public List<RepairOrder> getAllRepairOrders() {
         return repairOrderMapper.selectAll();
+    }
+
+    @Override
+    public PageInfo<RepairOrder> getRepairOrdersByPage(Long userId, Integer status, int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<RepairOrder> orders = repairOrderMapper.selectByCondition(userId, status);
+        return new PageInfo<>(orders);
     }
 
     @Override

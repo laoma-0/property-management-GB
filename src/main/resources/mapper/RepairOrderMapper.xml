@@ -13,14 +13,75 @@
         <result property="assigneeId" column="assignee_id" />
         <result property="createTime" column="create_time" />
         <result property="completeTime" column="complete_time" />
+        <!-- 关联字段映射 -->
+        <association property="user" javaType="org.example.entity.SysUser">
+            <id property="userId" column="u_user_id"/>
+            <result property="realName" column="user_real_name"/>
+        </association>
+        <association property="room" javaType="org.example.entity.Room">
+            <id property="roomId" column="r_room_id"/>
+            <result property="roomNumber" column="room_number"/>
+        </association>
+        <association property="assignee" javaType="org.example.entity.SysUser">
+            <id property="userId" column="a_user_id"/>
+            <result property="realName" column="assignee_real_name"/>
+        </association>
     </resultMap>
 
     <select id="selectById" resultMap="BaseResultMap">
-        SELECT * FROM repair_order WHERE order_id = #{orderId}
+        SELECT 
+            ro.*,
+            u.user_id as u_user_id,
+            u.real_name as user_real_name,
+            r.room_id as r_room_id,
+            r.room_number,
+            a.user_id as a_user_id,
+            a.real_name as assignee_real_name
+        FROM repair_order ro
+        LEFT JOIN sys_user u ON ro.user_id = u.user_id
+        LEFT JOIN room r ON ro.room_id = r.room_id
+        LEFT JOIN sys_user a ON ro.assignee_id = a.user_id
+        WHERE ro.order_id = #{orderId}
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
-        SELECT * FROM repair_order
+        SELECT 
+            ro.*,
+            u.user_id as u_user_id,
+            u.real_name as user_real_name,
+            r.room_id as r_room_id,
+            r.room_number,
+            a.user_id as a_user_id,
+            a.real_name as assignee_real_name
+        FROM repair_order ro
+        LEFT JOIN sys_user u ON ro.user_id = u.user_id
+        LEFT JOIN room r ON ro.room_id = r.room_id
+        LEFT JOIN sys_user a ON ro.assignee_id = a.user_id
+        ORDER BY ro.create_time DESC
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT 
+            ro.*,
+            u.user_id as u_user_id,
+            u.real_name as user_real_name,
+            r.room_id as r_room_id,
+            r.room_number,
+            a.user_id as a_user_id,
+            a.real_name as assignee_real_name
+        FROM repair_order ro
+        LEFT JOIN sys_user u ON ro.user_id = u.user_id
+        LEFT JOIN room r ON ro.room_id = r.room_id
+        LEFT JOIN sys_user a ON ro.assignee_id = a.user_id
+        <where>
+            <if test="userId != null">
+                AND ro.user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND ro.status = #{status}
+            </if>
+        </where>
+        ORDER BY ro.create_time DESC
     </select>
 
     <insert id="insert" parameterType="org.example.entity.RepairOrder">
@@ -30,8 +91,39 @@
 
     <update id="update" parameterType="org.example.entity.RepairOrder">
         UPDATE repair_order
-        SET user_id=#{userId}, room_id=#{roomId}, repair_type=#{repairType}, description=#{description}, ai_label=#{aiLabel}, image_path=#{imagePath}, status=#{status}, assignee_id=#{assigneeId}, create_time=#{createTime}, complete_time=#{completeTime}
-        WHERE order_id=#{orderId}
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
+            </if>
+            <if test="repairType != null and repairType != ''">
+                repair_type = #{repairType},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="aiLabel != null and aiLabel != ''">
+                ai_label = #{aiLabel},
+            </if>
+            <if test="imagePath != null and imagePath != ''">
+                image_path = #{imagePath},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="assigneeId != null">
+                assignee_id = #{assigneeId},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="completeTime != null">
+                complete_time = #{completeTime},
+            </if>
+        </set>
+        WHERE order_id = #{orderId}
     </update>
 
     <delete id="deleteById" parameterType="long">

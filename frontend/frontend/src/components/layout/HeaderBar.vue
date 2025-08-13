@@ -56,7 +56,7 @@ const userAvatar = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c672
   justify-content: space-between;
   height: 100%;
   padding: 0 20px;
-  background-color: #409EFF;
+  background-color: #08aeae;
   color: white;
 }
 
