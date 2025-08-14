@@ -1,60 +1,97 @@
-# 智慧物业管理系统 - 项目自述（界面设计补充版）
-<img width="2560" height="1528" alt="例图" src="https://github.com/user-attachments/assets/83e02a13-8320-4dba-af16-b1dd90583c0a" />
-
-## 界面设计
-
-前端基于 **Vue 3 + Vite** 技术栈构建，结合 **Element Plus** 组件库实现了一套功能完整、交互流畅的用户界面，同时通过 **Axios** 与后端 Spring Boot 服务进行数据交互，形成了前后端协同的完整交互链路。以下是详细设计说明：
-
-
-### 1. 技术栈与架构设计
-- **核心框架**：采用 Vue 3 作为前端框架，使用 `<script setup>` 语法糖简化组件逻辑，提升开发效率（参考 `frontend/frontend/README.md`）。
-- **构建工具**：基于 Vite 实现快速开发热更新与生产环境打包，相比传统 Webpack 构建速度提升 30%+，优化了开发体验。
-- **UI 组件库**：集成 Element Plus 组件库，统一界面风格，减少重复开发。核心组件如 `el-table`（数据表格）、`el-form`（表单）、`el-dialog`（对话框）等在各功能页面中广泛应用（如 `User.vue` 中的用户表格、`Repair.vue` 中的报修表单）。
-- **状态管理**：使用 Pinia 管理全局状态（如用户登录信息、系统配置），替代传统 Vuex，简化状态逻辑。
-- **路由管理**：通过 Vue Router 实现页面跳转与路由守卫，控制不同角色的访问权限（如业主无法访问物业人员的管理页面）。
-- **网络请求**：基于 Axios 封装统一的请求工具，处理接口调用、错误拦截与响应格式化，确保与后端 Spring Boot 服务的高效通信。
+# 智慧物业管理系统（property-management-GB）项目介绍
+<img width="2560" height="1528" alt="QQ20250813-213324" src="https://github.com/user-attachments/assets/44930203-01a2-4b35-a547-89471892c804" />
+<img width="2560" height="1528" alt="QQ20250813-213350" src="https://github.com/user-attachments/assets/dbad8738-e65b-46d1-a443-faad9d6ce21b" />
+<img width="2560" height="1528" alt="QQ20250813-213358" src="https://github.com/user-attachments/assets/d089fb52-da2e-4c61-8a29-2ff7a704ed3c" />
+<img width="2560" height="1528" alt="QQ20250813-213405" src="https://github.com/user-attachments/assets/4b41a183-8c74-4c41-b178-c78d457eed33" />
+<img width="2560" height="1528" alt="QQ20250813-213420" src="https://github.com/user-attachments/assets/1f9e65ae-ba73-4381-bd1c-e91fa0c607f4" />
+<img width="2560" height="1528" alt="QQ20250813-233028" src="https://github.com/user-attachments/assets/87e454be-18d2-4eea-b4c7-cfa09cf97f45" />
 
 
-### 2. 整体布局设计
-采用 **“顶部导航栏 + 侧边栏 + 主内容区”** 的经典后台布局，通过 Element Plus 的 `el-container` 组件实现响应式适配：
-- **顶部导航栏（HeaderBar）**：展示系统名称、用户信息与退出登录按钮，固定在页面顶部（高度 60px），通过阴影效果与主内容区区分（参考 `MainLayout.vue`）。
-- **侧边栏（Sidebar）**：左侧展示功能菜单，根据用户角色动态渲染可访问模块（如业主菜单包含“我的报修”“缴费记录”，物业人员菜单包含“用户管理”“公告发布”），支持菜单高亮（通过路由名称匹配 `activeMenu`）。
-- **主内容区（el-main）**：包含面包屑导航（Breadcrumb）与功能页面，背景使用浅灰色（`#f5f7fa`）提升内容可读性，页面内元素间距统一为 20px，保持视觉一致性。
+## 项目概述
+该项目是一个基于前后端分离架构的**智慧物业管理系统**，旨在通过数字化手段提升物业管理效率，实现小区楼栋、房间、业主信息、报修服务、公告发布等核心业务的线上管理。项目名称从代码及配置中可明确为“智慧物业管理系统”，适合中小型小区物业日常运营使用。
 
 
-### 3. 核心页面设计
-#### （1）首页（Home.vue）
-- **系统概览区**：展示系统名称、版本与描述，通过 `el-tag` 组件突出显示运行状态（如“运行正常”）。
-- **数据统计卡片**：采用 3 列布局，通过圆形图标 + 数字的形式展示核心数据（用户总数、房间总数、楼栋总数等），图标颜色与数据类型关联（如用户数用蓝色、报修单数用红色），提升数据辨识度。
-- **快捷操作区**：4 列布局的按钮组，直接跳转至核心功能页面（用户管理、物业管理、报修管理等），按钮样式与功能模块匹配（如“用户管理”用蓝色按钮，“报修管理”用橙色按钮）。
+## 技术栈架构
 
-#### （2）用户管理页（User.vue）
-- **搜索区**：多条件组合查询表单，包含用户名、姓名、手机号、用户类型（下拉选择：业主/物业人员/维修工），支持“搜索”与“重置”操作。
-- **数据表格**：使用 `el-table` 展示用户列表，包含用户ID、用户名、姓名、用户类型（通过 `el-tag` 区分：业主-绿色、物业-蓝色、维修工-橙色）、手机号、创建时间等字段，表格高度自适应，支持纵向滚动。
-- **分页控件**：底部集成 `el-pagination`，支持页码切换、每页条数调整（10/20/50/100），总条数实时更新。
-- **编辑对话框**：新增/编辑用户时弹出，表单验证规则严格（如手机号必须匹配 `1[3-9]\d{9}` 正则，密码长度≥6位），编辑时密码字段非必填（避免展示原密码）。
-
-#### （3）物业管理页（Property.vue）
-- **标签页切换**：通过 `el-tabs` 实现“楼栋管理”与“房间管理”的快速切换，标签页标题清晰区分功能。
-- **楼栋列表**：表格展示楼栋ID、名称、总层数，支持新增（输入楼栋名称与层数）、编辑、删除操作，删除前弹出确认对话框。
-- **房间管理**：关联楼栋信息，支持按楼栋筛选房间，表格包含房间ID、所属楼栋、房号、面积等字段，保持与数据库 `room` 表结构的一致性。
-
-#### （4）报修管理页（Repair.vue）
-- **报修表单**：包含报修人ID、房间ID、报修类型、AI标签（创新功能）、问题描述（多行文本）、图片路径等字段，表单布局采用 2 列栅格（`el-row` + `el-col`），提升空间利用率。
-- **状态展示**：通过表格列区分报修状态（待处理/处理中/已完成），使用不同颜色标识进度。
+### 1. 后端技术栈
+- **核心框架**：Spring Boot 3.2.5（用于快速开发RESTful API，简化配置与部署）。
+- **数据访问**：MyBatis 3.0.3（持久层框架，通过XML映射文件实现数据库操作）。
+- **数据库**：MySQL 8.0.32（关系型数据库，存储小区、用户、楼栋等核心数据）。
+- **API文档**：SpringDoc OpenAPI（通过`SwaggerConfig`配置，自动生成接口文档，便于前后端联调）。
+- **异常处理**：通过`GlobalExceptionHandler`统一捕获和处理异常，返回标准化错误信息。
 
 
-### 4. 交互体验优化
-- **动态加载**：所有列表数据加载时显示 `v-loading` 加载动画，避免用户误以为页面无响应。
-- **操作反馈**：新增/编辑/删除等操作后，通过 `ElMessage` 组件显示成功/失败提示（如“更新成功”“删除失败”）。
-- **表单验证**：实时校验输入内容（如手机号格式错误时即时提示），减少无效提交。
-- **分页记忆**：切换页面或筛选条件时，保持分页状态与筛选条件，提升操作连贯性。
-- **响应式适配**：通过 Element Plus 组件的响应式属性（如 `:span` 栅格占比）与 flex 布局，确保在 1366px 及以上分辨率的PC端均有良好显示效果。
+### 2. 前端技术栈
+- **核心框架**：Vue 3（采用`<script setup>`语法糖简化组件逻辑）。
+- **构建工具**：Vite（替代Webpack，提供更快的开发热更新和打包速度）。
+- **UI组件库**：Element Plus（提供表格、表单、对话框等现成组件，统一界面风格）。
+- **状态管理**：Pinia（管理全局状态，如用户登录信息、系统配置等）。
+- **路由管理**：Vue Router（实现页面跳转与权限控制）。
+- **网络请求**：Axios（封装统一请求工具，与后端API交互，如`api/repair.js`、`api/property.js`等）。
 
 
-### 5. 与后端/数据库的联动
-- **数据来源**：界面展示的所有数据（如用户列表、报修记录）均通过 Axios 调用后端 API 获取，最终来自 MySQL 数据库（如 `sys_user` 表、`repair` 表）。
-- **字段映射**：前端表单字段与数据库表字段一一对应（如 `userForm.username` 对应 `sys_user.username`，`repairForm.roomId` 对应 `repair.room_id`），确保数据一致性。
-- **接口文档**：通过后端 Swagger 生成的 API 文档（`SwaggerConfig.java`），前端可直观查看接口参数与返回格式，降低联调成本。
+## 核心功能模块
+
+### 1. 基础信息管理
+- **楼栋管理**：通过`BuildingController`提供楼栋的CRUD接口（查询、新增、修改、删除），对应数据库`building`表，支持按ID查询或获取所有楼栋信息。
+- **房间管理**：关联楼栋信息，存储房号、面积、业主ID等数据（`room`表），支持按楼栋筛选房间。
+- **小区信息管理**：维护小区名称、地址、物业联系电话等基础信息（`community`表）。
 
 
+### 2. 用户与权限管理
+- **用户管理**：支持系统用户（业主、物业人员等）的信息维护，前端通过`api/sysUser.js`、`api/user.js`提供用户更新接口，后端对应`sys_user`表。
+- **角色区分**：通过权限控制不同角色（如业主、物业人员）的可访问功能（如业主无法访问管理后台，物业可发布公告）。
+
+
+### 3. 公告管理
+- **公告发布与查询**：物业人员可发布公告（包含标题、内容、发布时间、是否置顶等），存储于`announcement`表；前端通过`api/announcement.js`获取公告详情，支持按ID查询。
+- **示例数据**：初始化SQL中包含“停水通知”“消防演习”等示例公告，展示实际业务场景。
+
+
+### 4. 报修管理
+- **报修订单处理**：业主可提交报修请求（包含房间ID、问题描述等），前端通过`api/repair.js`的`addRepairOrder`接口提交，后端对应`repair`相关表存储数据。
+- **状态跟踪**：支持报修状态（待处理、处理中、已完成）的管理与展示。
+
+
+### 5. 系统概览
+- 前端首页通过`api/home.js`的`getSystemOverview`接口获取系统核心数据统计（如用户总数、楼栋总数等），以可视化卡片展示。
+
+
+## 项目结构
+
+```
+property-management-GB/
+├── .gitattributes/.gitignore       # Git配置文件
+├── README.md                       # 项目说明文档
+├── mvnw/mvnw.cmd/pom.xml           # Maven配置（后端依赖与构建）
+├── package.json/package-lock.json  # 前端依赖配置
+├── sql/                            # 数据库脚本
+│   ├── init_smart_property_management.sql  # 初始化表结构与示例数据
+│   └── smart_property_management.sql       # 核心数据库脚本
+├── src/main/                       # 后端源代码
+│   ├── java/org/example/
+│   │   ├── controller/             # 控制器（如BuildingController）
+│   │   ├── entity/                 # 实体类（如Announcement、Building）
+│   │   ├── common/                 # 通用工具（Result结果封装、异常处理）
+│   │   ├── config/                 # 配置类（如SwaggerConfig）
+│   │   └── PropertyManagementGbApplication.java  # 启动类
+│   └── resources/
+│       └── application.properties  # 后端配置（数据库连接、端口等）
+└── frontend/                       # 前端源代码
+    ├── src/
+    │   ├── api/                    # 接口请求（如repair.js、home.js）
+    │   ├── main.js                 # 前端入口（配置Vue、Pinia、路由等）
+    │   └── ...（组件、路由、状态管理等）
+    └── README.md                   # 前端说明（Vue 3 + Vite配置）
+```
+
+
+## 运行说明
+1. **数据库准备**：执行`sql/init_smart_property_management.sql`初始化数据库表结构与示例数据。
+2. **后端配置**：修改`src/main/resources/application.properties`中的数据库连接信息（用户名、密码等）。
+3. **启动后端**：运行`PropertyManagementGbApplication.java`启动Spring Boot服务。
+4. **启动前端**：进入`frontend`目录，执行`npm install`安装依赖后，通过`npm run dev`启动Vite开发服务器。
+5. **接口文档**：后端启动后，访问Swagger UI（默认路径通常为`http://localhost:8080/swagger-ui.html`）查看API详情。
+
+
+该项目通过前后端分离架构实现了物业管理的核心功能，技术选型成熟，代码结构清晰，便于维护和扩展，适合作为中小型小区的数字化管理解决方案。
