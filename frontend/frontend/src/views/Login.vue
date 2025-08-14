@@ -21,6 +21,7 @@
               type="password"
               placeholder="请输入密码"
               prefix-icon="Lock"
+              @keyup.enter="handleLogin"
           />
         </el-form-item>
         <el-form-item>
@@ -39,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/userStore'
 import { ElMessage } from 'element-plus'
@@ -64,6 +65,13 @@ const loginRules = reactive({
   ]
 })
 
+// 检查是否已登录
+const checkLoggedIn = () => {
+  if (userStore.token && !userStore.isLoginExpired()) {
+    router.push('/')
+  }
+}
+
 const handleLogin = async () => {
   try {
     await loginFormRef.value.validate()
@@ -71,9 +79,8 @@ const handleLogin = async () => {
     // 调用登录接口
     await userStore.login(loginForm.username, loginForm.password)
     ElMessage.success('登录成功')
-    // 跳转至来源页或首页
-    const redirect = router.currentRoute.value.query.redirect || '/'
-    router.push(redirect)
+    // 登录成功后直接跳转到主页，不使用redirect参数
+    router.push('/')
   } catch (error) {
     if (error.name !== 'ValidationError') {
       ElMessage.error(error.message || '登录失败')
@@ -82,6 +89,10 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
+
+onMounted(() => {
+  checkLoggedIn()
+})
 </script>
 
 <style scoped>

@@ -34,8 +34,8 @@ const activeMenu = computed(() => route.name);
 
 <style scoped>
 .main-container {
-  height: 99vh;
-  width: 99vw;
+  height: 98vh;
+  width: 98vw;
   display: flex;
   flex-direction: column;
   overflow: hidden;

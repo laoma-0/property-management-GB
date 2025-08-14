@@ -42,7 +42,7 @@
           style="width: 100%" 
           v-loading="loading"
           height="100%">
-          <el-table-column prop="orderId" label="订单ID" width="100" />
+          <el-table-column prop="orderId" label="订单ID" width="80" />
           <el-table-column prop="user.realName" label="报修人" width="120" />
           <el-table-column prop="room.roomNumber" label="房间号" width="100" />
           <el-table-column prop="repairType" label="报修类型" width="120" />

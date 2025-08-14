@@ -17,6 +17,10 @@
         SELECT * FROM user WHERE id = #{id}
     </select>
 
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
     <select id="selectAll" resultMap="BaseResultMap">
         SELECT * FROM user
     </select>
@@ -38,16 +42,16 @@
 
     <insert id="insert" parameterType="org.example.entity.User">
         INSERT INTO user (username, password, role, name, phone, email, create_time, update_time)
-        VALUES (#{username}, #{password}, #{role}, #{name}, #{phone}, #{email}, #{createTime}, #{updateTime})
+        VALUES (#{username}, #{password}, #{role}, #{name}, #{phone}, #{email}, NOW(), NOW())
     </insert>
 
     <update id="update" parameterType="org.example.entity.User">
         UPDATE user
-        SET username=#{username}, password=#{password}, role=#{role}, name=#{name}, phone=#{phone}, email=#{email}, create_time=#{createTime}, update_time=#{updateTime}
+        SET username=#{username}, password=#{password}, role=#{role}, name=#{name}, phone=#{phone}, email=#{email}, update_time=NOW()
         WHERE id=#{id}
     </update>
 
-    <delete id="deleteById" parameterType="int">
+    <delete id="deleteById" parameterType="long">
         DELETE FROM user WHERE id=#{id}
     </delete>
 </mapper>

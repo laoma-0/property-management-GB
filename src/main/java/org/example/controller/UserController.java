@@ -32,11 +32,11 @@ public class UserController {
      * @return 包含用户详情的Result对象
      */
     @GetMapping("/{id}")
-    @Operation(summary = "根据ID查询用户", description = "通过用户ID获取用户账号信息（用户名、角色、权限等）")
+    @Operation(summary = "根据ID查询用户", description = "通过用户ID获取用户详情（用户名、角色、联系方式等）")
     public Result<User> getUserById(
             @Parameter(description = "用户ID", required = true)
             @PathVariable @Min(value = 1, message = "用户ID必须大于0") Integer id) {
-        User user = userService.getUserById(id);
+        User user = userService.getUserById(Long.valueOf(id));
         return Result.success(user);
     }
 
@@ -122,11 +122,11 @@ public class UserController {
      * @return 包含影响行数的Result对象
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "删除用户", description = "通过用户ID删除指定用户账号")
+    @Operation(summary = "删除用户", description = "通过用户ID删除指定用户")
     public Result<Integer> deleteUser(
             @Parameter(description = "用户ID", required = true)
             @PathVariable @Min(value = 1, message = "用户ID必须大于0") Integer id) {
-        int rows = userService.deleteUserById(id);
+        int rows = userService.deleteUserById(Long.valueOf(id));
         return Result.success(rows);
     }
 }

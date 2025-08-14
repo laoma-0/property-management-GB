@@ -19,7 +19,7 @@
       <el-dropdown trigger="click">
         <div class="user-info">
           <el-avatar :size="36" :src="userAvatar" />
-          <span class="username">管理员</span>
+          <span class="username">{{ username }}</span>
           <el-icon><ArrowDown /></el-icon>
         </div>
         <template #dropdown>
@@ -27,7 +27,7 @@
             <el-dropdown-item>
               <el-icon><User /></el-icon> 个人中心
             </el-dropdown-item>
-            <el-dropdown-item>
+            <el-dropdown-item @click="handleLogout">
               <el-icon><SwitchButton /></el-icon> 退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -38,15 +38,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/userStore'
 import { Bell, User, ArrowDown, SwitchButton } from '@element-plus/icons-vue'
 import Breadcrumb from './Breadcrumb.vue'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+const userStore = useUserStore() // 添加这行来实际创建userStore实例
 
 // 用户头像 - 使用默认头像
 const userAvatar = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
+
+// 用户名显示
+const username = computed(() => {
+  // 确保userStore存在且有userInfo
+  if (userStore && userStore.userInfo) {
+    return userStore.userInfo.username || userStore.userInfo.name || '管理员'
+  }
+  return '管理员'
+})
+
+// 退出登录
+const handleLogout = () => {
+  userStore.logout()
+  ElMessage.success('退出登录成功')
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -79,11 +98,6 @@ const userAvatar = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c672
 
 .header-icon {
   cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    color: #e6f7ff;
-  }
 }
 
 .user-info {
@@ -91,20 +105,9 @@ const userAvatar = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c672
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
 }
 
 .username {
   font-size: 14px;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

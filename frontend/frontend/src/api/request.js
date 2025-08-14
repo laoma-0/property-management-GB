@@ -5,10 +5,13 @@ const service = axios.create({
   timeout: 10000,
 });
 
-// 请求拦截器，可加token
+// 请求拦截器，添加token
 service.interceptors.request.use(
   (config) => {
-    // config.headers['Authorization'] = 'Bearer ' + token
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
     return config;
   },
   (error) => Promise.reject(error)
