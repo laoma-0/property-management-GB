@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import path from "path"; // 新增这行：导入path模块
+import { resolve } from "path"; // 修改这行：从path模块导入resolve方法
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -16,7 +16,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"), // 这里用到了path，必须先导入
+      "@": resolve(__dirname, "./src"), // 修改这行：使用resolve方法替代path.resolve
     },
     extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
   },
